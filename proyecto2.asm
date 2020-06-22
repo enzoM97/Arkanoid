@@ -77,30 +77,36 @@ main proc
 ;-------------------------------------;
     printInvaders:
         mov cont, 000h
-        mov cx, x                     ; columna inicial para el primer bloque
-        mov dx, y                     ; fila inicial para el primer bloque
         mov ah, 0ch                   ; poner pixel
         mov al, rojo                  ; color de bloques
         call printLinea               ; imprime linea de bloques
         
-        mov al, verde                 ; color de bloques
-        call printLinea               ; imprime linea de bloques
+        ;mov al, verde                 ; color de bloques
+        ;call printLinea               ; imprime linea de bloques
     ret
         
     printLinea:
-        add ancho, dx
-                   
-        call printBloque
+        mov cx, x                     ; columna inicial para el primer bloque
+        mov dx, y                     ; fila inicial para el primer bloque
+        ;add ancho, dx
+        
+        push ax           
+        call printBloques
+        pop ax
                                       
         mov x, 5                      ; vuelve a la posicion inicial x
         mov dx, ancho
         add dx, 5
-        mov ancho, dx
+        add dx, y
+        mov y, dx
     ret    
   ; imprime un bloque 
-    printBloque:                      ; ubica el pixel en la posicion inicial x
-        mov cx, x                      
+    printBloques:
+        mov bx, 0000h                 ; ax se utiliza como registro auxiliar para iteracion de bucle
+        mov cx, x                     ; ubica el pixel en la posicion inicial x 
+        
         inicio:
+        push bx
         mov bx, 000h                  ; iterador
         colcount:
             inc cx                    ; pixel a imprimir
@@ -108,20 +114,22 @@ main proc
             inc bx
             cmp bx, largo             ; mientras el iterador sea 
             jb colcount               ; menor al largo del bloque imprimir primera fila
-            
+        pop bx    
+        
         mov cx, x                     ; posicion inicial x para nueva fila
         inc dx                        ; siguiente fila
-        cmp dx, ancho                 ; mientras y sea menor al ancho del bloque
+        inc bx
+        cmp bx, ancho                 ; mientras y sea menor al ancho del bloque
         jb inicio                     ; seguir imprimiendo
-        
+              
         add cx, largo                 ; nueva posicion para siguiente
         add cx, 5                     ; bloque posicion inicial += largo + 5 <--(espacio entre cada bloque) 
         mov x, cx                     ; nueva posicion inicial en x
-        mov dx, y                     ; misma posicion en y
+        mov ax, y                     ; misma posicion en y
         
         inc cont                      ; contador para especificar
-        cmp cont, 001h                ; cuantos bloques imprimir
-        jb printBloque       
+        cmp cont, 002h                ; cuantos bloques imprimir
+        jb printBloques
     ret
 ;-------------------------------------;
     
