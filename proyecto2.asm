@@ -106,7 +106,6 @@ main proc
                    
         call printBloque
                                       
-        mov x, 10                      ; vuelve a la posicion inicial x
         mov ancho, 10
     ret    
   ; imprime un bloque 
@@ -134,7 +133,7 @@ main proc
         inc cont                      ; contador para especificar
         cmp cont, 007h                ; cuantos bloques imprimir
         jb printBloque 
-        mov x, 10
+        mov x, 20
         mov cont, 000h      
     ret
 ;-------------------------------------;
