@@ -27,7 +27,7 @@ largo dw 35
 ancho dw 10
 
 ; coordenadas iniciales del primer bloque
-x dw 5
+x dw 20
 y dw 25
 
 ;variables para bucles
@@ -51,6 +51,9 @@ main proc
     mov ax, @data        ; Cargar al data segment 
     mov ds, ax           ; las variables
     
+   mov ax, @data        ; Cargar al data segment 
+    mov ds, ax           ; las variables
+    
     mov ah, 0
     mov al, 13h          ; Inicializar modo grafico
     int 10h              ;
@@ -59,9 +62,9 @@ main proc
     mov dx, 0000h        ;
 
     
-    ;call printHeader     ; imprime el encabezado del juego
+    call printHeader     ; imprime el encabezado del juego
     
-    call printInvaders
+    call printInvaders   ; imprime los invasores
     
     
     ; finalizar el programa
@@ -77,36 +80,39 @@ main proc
 ;-------------------------------------;
     printInvaders:
         mov cont, 000h
+        mov cx, x                     ; columna inicial para el primer bloque
+        mov dx, y                     ; fila inicial para el primer bloque
         mov ah, 0ch                   ; poner pixel
         mov al, rojo                  ; color de bloques
         call printLinea               ; imprime linea de bloques
         
-        ;mov al, verde                 ; color de bloques
-        ;call printLinea               ; imprime linea de bloques
+        mov cx, x
+        mov y, 40
+        mov dx, y
+        mov ah, 0ch
+        mov al, verde                 ; color de bloques
+        call printLinea               ; imprime linea de bloques  
+        
+        mov cx, x
+        mov y, 55
+        mov dx, y
+        mov ah, 0ch
+        mov al, cyan
+        call printLinea
     ret
         
     printLinea:
-        mov cx, x                     ; columna inicial para el primer bloque
-        mov dx, y                     ; fila inicial para el primer bloque
-        ;add ancho, dx
-        
-        push ax           
-        call printBloques
-        pop ax
+        add ancho, dx
+                   
+        call printBloque
                                       
-        mov x, 5                      ; vuelve a la posicion inicial x
-        mov dx, ancho
-        add dx, 5
-        add dx, y
-        mov y, dx
+        mov x, 10                      ; vuelve a la posicion inicial x
+        mov ancho, 10
     ret    
   ; imprime un bloque 
-    printBloques:
-        mov bx, 0000h                 ; ax se utiliza como registro auxiliar para iteracion de bucle
-        mov cx, x                     ; ubica el pixel en la posicion inicial x 
-        
+    printBloque:                      ; ubica el pixel en la posicion inicial x
+        mov cx, x                      
         inicio:
-        push bx
         mov bx, 000h                  ; iterador
         colcount:
             inc cx                    ; pixel a imprimir
@@ -114,22 +120,22 @@ main proc
             inc bx
             cmp bx, largo             ; mientras el iterador sea 
             jb colcount               ; menor al largo del bloque imprimir primera fila
-        pop bx    
-        
+            
         mov cx, x                     ; posicion inicial x para nueva fila
         inc dx                        ; siguiente fila
-        inc bx
-        cmp bx, ancho                 ; mientras y sea menor al ancho del bloque
+        cmp dx, ancho                 ; mientras y sea menor al ancho del bloque
         jb inicio                     ; seguir imprimiendo
-              
+        
         add cx, largo                 ; nueva posicion para siguiente
         add cx, 5                     ; bloque posicion inicial += largo + 5 <--(espacio entre cada bloque) 
         mov x, cx                     ; nueva posicion inicial en x
-        mov ax, y                     ; misma posicion en y
+        mov dx, y                     ; misma posicion en y
         
         inc cont                      ; contador para especificar
-        cmp cont, 002h                ; cuantos bloques imprimir
-        jb printBloques
+        cmp cont, 007h                ; cuantos bloques imprimir
+        jb printBloque 
+        mov x, 10
+        mov cont, 000h      
     ret
 ;-------------------------------------;
     
